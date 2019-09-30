@@ -20,6 +20,7 @@ Route.post('sessions', 'SessionController.store').validator('Session')
 Route.post('users', 'UserController.store').validator('User')
 
 Route.group( () => {
+  Route.get('roles', 'RoleController.index')
   Route 
     .resource('teams', 'TeamController')
     .apiOnly()
@@ -33,11 +34,21 @@ Route.group( () => {
         ]
       )
     ) 
+    .middleware(
+      new Map(
+        [
+          [
+            ['teams.store', 'teams.update'],
+            ['can:projects_create']
+          ]
+        ]
+      )
+    ) 
 }).middleware('auth')
 
 Route.group( () => {
   
-  Route.post('invites', 'InviteController.store').validator('Invite')
+  Route.post('invites', 'InviteController.store').validator('Invite').middleware('can:invites_create')
 
   Route.resource('projects', 'ProjectController')
     .apiOnly()
